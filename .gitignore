@@ -1,0 +1,9 @@
+logs/*
+!.gitkeep
+node_modules/
+config/
+logs/
+scripts/
+test/
+.settings
+

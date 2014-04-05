@@ -1,0 +1,8 @@
+{
+  "name": "dynamo-finance",
+  "description": "A small project to manage personal incomes and expenses with angularjs and AWS dynamodb",
+  "repository": "",
+  "devDependencies": {
+  
+  }
+}

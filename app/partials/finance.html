@@ -1,0 +1,187 @@
+<div class="panel panel-default">
+	<div class="panel-heading">
+  	<h1 class="text-center"><a href="/dynamofinance/app">FINANCE</a></h1>
+	</div>
+	
+	<div class="panel-body">
+			<ul class="nav nav-tabs">
+			  <li ng-class="{active: action=='list'}"><a href="#/finance/list/last30">List</a></li>
+			  <li ng-class="{active: action=='chart'}"><a href="#/finance/chart">Chart</a></li>
+			  <li ng-class="{active: action=='new'}"><a href="#/finance/new">Add new</a></li>
+			  <li><a href="#/logout">Logout</a></li>
+			</ul>
+	</div>
+	
+	<div class="panel-body text-center" ng-show="action == 'chart'"></div>
+	
+	<div class="panel-body text-center" ng-show="action == 'new'">
+			 <form role="form" class="form-horizontal" ng-submit="add(form)"  ng-show="!entryId">
+			  <div class="form-group">
+			    <label class="control-label col-lg-3">Type:</label>
+			    <div class="col-lg-9 text-left">
+	   		    <button type="button" class="btn" ng-class="{'btn-danger':form.type == 'expense'}" ng-click="form.type = 'expense'"><span class="glyphicon glyphicon-ok" ng-show="form.type == 'expense'"></span> expense</button>
+  			    <button type="button" class="btn" ng-class="{'btn-success':form.type == 'income'}" ng-click="form.type = 'income'"><span class="glyphicon glyphicon-ok" ng-show="form.type == 'income'"></span> income</button>
+			    </div>
+			  </div>
+			  <div class="form-group" ng-show="form.type">
+			    <label class="control-label col-lg-3" for="">Amount:</label>
+          <div class="col-lg-3 text-left">
+			     <input type="text"  id="" placeholder="Type amount here" ng-model="form.amount" value="{{ form.amount }}" class="form-control"> 
+			    </div>
+          <div class="col-lg-6 text-left">
+			     add: <button class="btn btn-default" ng-click="amount(1)" type="button"> 1 </button>
+			     <button type="button" class="btn btn-default" ng-click="amount(10)" type="button"> 10 </button>
+			     <button type="button" class="btn btn-default" ng-click="amount(50)" type="button"> 50 </button>
+			     <button type="button" class="btn btn-default" ng-click="amount(100)" type="button"> 100 </button>
+			     <button type="button" class="btn btn-default" ng-click="amount(500)" type="button"> 500 </button>
+			    </div>
+			  </div>
+			  
+        <div class="form-group" ng-show="form.amount">
+          <label class="control-label col-lg-3" for="">Tag:</label>
+          <div class="col-lg-6 text-left">
+           <p ng-repeat="(key,tag) in expenseTags | orderBy" ng-show= "form.type == 'expense'">
+            <button type="button" ng-click="form.tag = key" class="btn btn-default"  ng-class="{'btn-success':form.tag == key}" ><span class="glyphicon glyphicon-ok" ng-show="form.tag == key"></span> {{ key | uppercase}}</button> {{tag}}
+           </p>
+           <p ng-repeat="(key,tag) in incomeTags | orderBy" ng-show= "form.type == 'income'" >
+            <button type="button" ng-click="form.tag = key" class="btn btn-default"  ng-class="{'btn-success':form.tag == key}" ><span class="glyphicon glyphicon-ok" ng-show="form.tag == key"></span> {{ key | uppercase}}</button> {{tag}}
+           </p>
+          </div>
+        </div>
+        
+         <div class="form-group" ng-show="form.tag">
+          <label class="control-label col-lg-3">Recurrent:</label>
+          <div class="col-lg-9 text-left">
+            <button type="button" class="btn" ng-class="{'btn-info':form.recurrent == 'no'}" ng-click="form.recurrent = 'no'"><span class="glyphicon glyphicon-ok" ng-show="form.recurrent == 'no'"></span> No</button>
+            <button type="button" class="btn" ng-class="{'btn-info':form.recurrent == 'daily'}" ng-click="form.recurrent = 'daily'"><span class="glyphicon glyphicon-ok" ng-show="form.recurrent == 'daily'"></span> Daily</button>
+            <button type="button" class="btn" ng-class="{'btn-info':form.recurrent == 'weekly'}" ng-click="form.recurrent = 'weekly'"><span class="glyphicon glyphicon-ok" ng-show="form.recurrent == 'weekly'"></span> Weekly</button>
+            <button type="button" class="btn" ng-class="{'btn-info':form.recurrent == 'monthly'}" ng-click="form.recurrent = 'monthly'"><span class="glyphicon glyphicon-ok" ng-show="form.recurrent == 'monthly'"></span> Monthly</button>
+            <button type="button" class="btn" ng-class="{'btn-info':form.recurrent == 'quarterly'}" ng-click="form.recurrent = 'quarterly'"><span class="glyphicon glyphicon-ok" ng-show="form.recurrent == 'quarterly'"></span> Quarterly</button>
+            <button type="button" class="btn" ng-class="{'btn-info':form.recurrent == 'half-yearly'}" ng-click="form.recurrent = 'half-yearly'"><span class="glyphicon glyphicon-ok" ng-show="form.recurrent == 'half-yearly'"></span> Half-yearly</button>
+            <button type="button" class="btn" ng-class="{'btn-info':form.recurrent == 'yearly'}" ng-click="form.recurrent = 'yearly'"><span class="glyphicon glyphicon-ok" ng-show="form.recurrent == 'yearly'"></span> Yearly</button>
+          </div>
+        </div>
+        
+         <div class="form-group" ng-show="form.recurrent && form.tag">
+          <label class="control-label col-lg-3">To be confirmed?</label>
+          <div class="col-lg-9 text-left">
+            <button type="button" class="btn" ng-class="{'btn-warning':form.confirmed == 'no'}" ng-click="form.confirmed = 'no'"><span class="glyphicon glyphicon-ok" ng-show="form.confirmed == 'no'"></span> No</button>
+            <button type="button" class="btn" ng-class="{'btn-success':form.confirmed == 'yes'}" ng-click="form.confirmed = 'yes'"><span class="glyphicon glyphicon-ok" ng-show="form.confirmed == 'yes'"></span> Yes</button>
+            <small> <i>if yes, will be stored as presumed until confirmation</i></small>
+          </div>
+        </div>
+        
+         <div class="form-group" ng-show="form.confirmed && form.tag">
+          <label class="control-label col-lg-3">When:</label>
+          <div class="col-lg-9 text-left">
+            <button type="button" class="btn" ng-class="{'btn-info':form.date == today}" ng-click="form.date = today"><span class="glyphicon glyphicon-ok" ng-show="form.date == 'today'"></span> Today</button>
+            <button type="button" class="btn" ng-class="{'btn-info':form.date == tomorrow}" ng-click="form.date = tomorrow"><span class="glyphicon glyphicon-ok" ng-show="form.date == 'tomorrow'"></span> Tomorrow</button>
+            <button type="button" class="btn" ng-class="{'btn-info':form.date == yesterday}" ng-click="form.date = yesterday"><span class="glyphicon glyphicon-ok" ng-show="form.date == 'yesterday'"></span> Yesterday</button>
+            <button type="button" class="btn" ng-class="{'btn-info':form.date == month}" ng-click="form.date = month"><span class="glyphicon glyphicon-ok" ng-show="form.date == 'month'"></span> End of month</button>
+          </div>
+        </div>
+        
+        
+			  <button type="submit" ng-show="form.date" class="btn btn-default btn-lg">Confirm &amp; add</button>
+			</form>
+			
+			<div class="row margin-10-0" ng-show="entryId">
+			 <div class="col-lg-12 text-center">
+			   <button ng-click="enableUpload = 1" class="btn btn-default">Attach a file</button>
+			   <button ng-click="entryId = 0" class="btn btn-primary">Add another entry</button>
+			 </div>
+			</div>
+			
+       <form role="form" class="form-horizontal" ng-submit="uploadFile()" ng-show="entryId && enableUpload">
+        <div class="form-group">
+          <label class="control-label col-lg-3">Upload an invoice/receipt:</label>
+          <div class="col-lg-9 text-left">
+            <input type='file' fileread="upload"  class="btn btn-default"> 
+          </div>
+          <div class="col-lg-4 text-center">
+            <button type="submit" class="btn btn-default btn-lg">Confirm &amp; upload</button>
+          </div>
+        </div>
+        </form>
+	</div>
+	<div class="panel-body text-center" ng-show="action == 'list'">
+	 
+	 
+	 <div class="row">
+	   <div class="col-lg-12 margin-10-0">
+	     
+      <div class="btn-group">
+			  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			    <span ng-show="!type">type</span><span ng-show="type">{{ type }}</span> <span class="caret"></span>
+			  </button>
+			  <ul class="dropdown-menu" role="menu">
+			    <li><a ng-click="filterType('income')">Income</a></li>
+			    <li><a ng-click="filterType('expense')">Expense</a></li>
+			    <li><a ng-click="filterType('')">All</a></li>
+			  </ul>
+			</div>
+			
+	     <div class="btn-group" ng-show="type == 'income'">
+			  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			    <span ng-show="!tag">tag</span><span ng-show="tag">{{ tag }}</span> <span class="caret"></span>
+			  </button>
+			  <ul class="dropdown-menu" role="menu">
+			    <li ng-repeat="(key,tagName) in incomeTags | orderBy" ><a ng-click="filterTag(key)"><strong>{{ key }}</strong> {{ tagName }}</a></li>
+          <li><a ng-click="tag = ''">All</a></li>
+			  </ul>
+			</div>
+			
+	     <div class="btn-group" ng-show="type == 'expense'">
+			  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			    <span ng-show="!tag">tag</span><span ng-show="tag">{{ tag }}</span> <span class="caret"></span>
+			  </button>
+			  <ul class="dropdown-menu" role="menu">
+			    <li ng-repeat="(key,tagName) in expenseTags | orderBy" ><a ng-click="filterTag(key)"><strong>{{ key }}</strong> {{ tagName }}</a></li>
+          <li><a ng-click="tag = ''">All</a></li>
+			  </ul>
+			</div>
+			
+	   </div>
+	 </div>
+	 
+	 <div class="table-responsive" ng-show="movements">
+	   <table class="table table-bordered ">
+	     <thead>
+	       <tr>
+	         <th class="text-center">When</th>
+	         <th class="text-center">Tag</th>
+	         <th class="text-center visible-md visible-lg">Expense</th>
+	         <th class="text-center visible-md visible-lg">Income</th>
+	         <th class="text-center visible-sm visible-xs">Ex/In</th>
+	         <th class="text-center visible-md visible-lg">Status</th>
+	         <th class="text-center">Options</th>
+	       </tr>
+	     </thead>
+	     <tbody>
+	       <tr ng-repeat="el in movements|filter:{type:type,tag:tag}">
+	         <td>{{ el.date | date}}</td>
+	         <td>{{ el.tag }}</td>
+	         <td ng-show="el.type == 'expense'" class="danger"><strong> - {{ el.amount | currency:symbol}}</strong></td>
+	         <td  class="visible-md visible-lg"><small>n/a</small></td>
+	         <td ng-show="el.type == 'income'" class="success"><strong> + {{ el.amount | currency:symbol }}</strong></td>
+           <td ng-show="el.confirmed" class="visible-md visible-lg"> OK </td>
+           
+           <td ng-show="el.confirmed">
+            <button class="btn btn-default" ng-click="edit(el)"><span class="glyphicon glyphicon-edit"></span> edit</button>
+           </td>
+           
+           <td ng-show="!el.confirmed" class="warning visible-md visible-lg">to be confirmed</td>
+           <td ng-show="!el.confirmed" class="warning">
+            <button class="btn btn-default btn-xs" ng-click="confirm(el)"><span class="glyphicon glyphicon-confirm"></span> confirm</button>
+           </td>
+	       </tr>
+	     </tbody>
+	   </table>
+	 
+	 </div>
+	 
+	 
+	 
+	 
+  </div>
+</div>
